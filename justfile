@@ -1,9 +1,9 @@
 run:
-    python src/main.py
+    npm run dev
 
 check:
-    ruff check .
-    pyright
+    npm run lint
+    npm run build
 
 format:
-    ruff format .
+    npx prettier --write .

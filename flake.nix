@@ -1,5 +1,5 @@
 {
-  description = "advanced-web-technology Python development environment";
+  description = "Advanced Web Technology development environment";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
@@ -10,9 +10,7 @@
     in {
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
-          (python3.withPackages (pythonPackages: with pythonPackages; [ pandas ]))
-          ruff
-          pyright
+          nodejs_22
           just
         ];
       };
