@@ -2,6 +2,8 @@
 
 A small course catalog built for the Advanced Web Technologies course. The project demonstrates the Next.js App Router, Server and Client Components, dynamic routes, loading and not-found UI, static parameter generation, and TypeScript props.
 
+Lab 2 adds shadcn/ui course cards, Tailwind styling, card hover states, and a responsive one-, two-, or three-column catalog grid.
+
 ## Routes
 
 - `/` — home page

@@ -2,11 +2,11 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <section className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200 sm:p-12">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Advanced Web Technologies</p>
-      <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">Course Catalog</h1>
-      <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">Welcome to the catalog. Browse the courses and open any course to learn more about it.</p>
-      <Link href="/courses" className="mt-8 inline-flex rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white transition hover:bg-blue-700">Explore courses</Link>
+    <section className="max-w-2xl">
+      <p className="mb-6 text-xs font-bold uppercase tracking-[0.25em] text-stone-500">Advanced Web Technologies · 2026</p>
+      <h1 className="text-6xl font-black leading-none tracking-[-0.06em] sm:text-8xl">Course<br />Index<span className="text-amber-500">.</span></h1>
+      <p className="mt-8 max-w-md text-lg leading-7 text-stone-600">A concise catalog of the courses shaping our semester.</p>
+      <Link href="/courses" className="mt-10 inline-block border-b-2 border-stone-900 pb-1 font-bold hover:border-amber-500">Browse all courses →</Link>
     </section>
   );
 }

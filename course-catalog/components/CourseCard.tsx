@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type CourseCardProps = {
   id: string;
@@ -10,13 +12,19 @@ type CourseCardProps = {
 
 export default function CourseCard({ id, title, description, credits, likes }: CourseCardProps) {
   return (
-    <Link href={`/courses/${id}`} className="group block rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-md hover:ring-blue-300">
-      <h2 className="text-xl font-bold group-hover:text-blue-700">{title}</h2>
-      <p className="mt-3 leading-7 text-slate-600">{description}</p>
-      <div className="mt-5 flex items-center justify-between text-sm font-medium text-slate-500">
-        <span>{credits} credits</span>
-        <span aria-label={`${likes} likes`}>❤ {likes}</span>
-      </div>
+    <Link href={`/courses/${id}`} className="group block h-full">
+      <Card className="h-full rounded-none bg-transparent py-0 shadow-none hover:border-blue-300 hover:shadow-md transition">
+        <CardHeader className="border-b py-5">
+          <CardTitle className="text-lg leading-snug group-hover:underline">{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-1 flex-col gap-5 pb-5">
+          <p className="flex-1 text-sm leading-6 text-muted-foreground">{description}</p>
+          <div className="flex items-center justify-between border-t pt-4 text-sm text-muted-foreground">
+            <span>{credits} credits</span>
+            <Button variant="ghost" size="sm" aria-label={`${likes} likes`}>♥ {likes}</Button>
+          </div>
+        </CardContent>
+      </Card>
     </Link>
   );
 }
