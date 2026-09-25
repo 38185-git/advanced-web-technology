@@ -4,6 +4,7 @@ A small course catalog built for the Advanced Web Technologies course. The proje
 
 Lab 2 adds shadcn/ui course cards, Tailwind styling, card hover states, and a responsive one-, two-, or three-column catalog grid.
 The optional theme task is also complete: the interface uses a custom `index` accent defined through Tailwind's `@theme` block.
+Two more bonus tasks add automatic system dark mode and a custom shadcn/ui `index` button variant.
 
 ## Routes
 

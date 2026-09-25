@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
       <body className="min-h-screen">
-        <header className="border-b border-stone-300">
+        <header className="border-b border-stone-300 dark:border-stone-700">
           <nav className="mx-auto flex max-w-4xl items-center justify-between px-5 py-5">
             <Link href="/" className="text-lg font-black tracking-tight">INDEX<span className="text-index">.</span></Link>
             <div className="flex gap-1 text-sm font-medium sm:gap-2">

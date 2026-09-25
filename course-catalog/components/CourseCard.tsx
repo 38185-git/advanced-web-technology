@@ -13,7 +13,7 @@ type CourseCardProps = {
 export default function CourseCard({ id, title, description, credits, likes }: CourseCardProps) {
   return (
     <Link href={`/courses/${id}`} className="group block h-full">
-      <Card className="h-full rounded-none bg-transparent py-0 shadow-none hover:border-blue-300 hover:shadow-md transition">
+      <Card className="h-full rounded-none bg-transparent py-0 shadow-none transition hover:border-blue-300 hover:shadow-md dark:border-stone-700 dark:hover:border-index">
         <CardHeader className="border-b py-5">
           <CardTitle className="text-lg leading-snug group-hover:underline">{title}</CardTitle>
         </CardHeader>
