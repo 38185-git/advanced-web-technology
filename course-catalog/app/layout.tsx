@@ -18,11 +18,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-screen">
         <header className="border-b border-stone-300">
           <nav className="mx-auto flex max-w-4xl items-center justify-between px-5 py-5">
-            <Link href="/" className="text-lg font-black tracking-tight">INDEX<span className="text-amber-500">.</span></Link>
+            <Link href="/" className="text-lg font-black tracking-tight">INDEX<span className="text-index">.</span></Link>
             <div className="flex gap-1 text-sm font-medium sm:gap-2">
-              <Link href="/" className="px-3 py-2 hover:bg-amber-300">Home</Link>
-              <Link href="/courses" className="px-3 py-2 hover:bg-amber-300">Courses</Link>
-              <Link href="/about" className="px-3 py-2 hover:bg-amber-300">About</Link>
+              <Link href="/" className="px-3 py-2 hover:bg-index">Home</Link>
+              <Link href="/courses" className="px-3 py-2 hover:bg-index">Courses</Link>
+              <Link href="/about" className="px-3 py-2 hover:bg-index">About</Link>
             </div>
           </nav>
         </header>

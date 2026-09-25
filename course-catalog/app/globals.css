@@ -19,6 +19,7 @@ body {
 }
 
 @theme inline {
+  --color-index: oklch(0.8 0.16 82);
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
