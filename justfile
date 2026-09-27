@@ -1,9 +1,11 @@
 run:
-    npm run dev
+    npm --prefix course-catalog run dev
 
-check:
-    npm run lint
-    npm run build
+check: nix-check
+    npm --prefix course-catalog run lint
+    npm --prefix course-catalog run build
 
 format:
-    npx prettier --write .
+    prettier --write course-catalog/app course-catalog/components course-catalog/lib
+    just nix-format
+import 'dev-tools.just'

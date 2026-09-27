@@ -1,4 +1,9 @@
 .direnv/
+.env
+.env.*
+!.env.example
+node_modules/
+.next/
 result
 __pycache__/
 *.py[cod]

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Search and explore public GitHub repositories." />
+    <title>Repo Scout</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header id="home" class="site-header">
+      <nav class="container" aria-label="Main navigation">
+        <a class="logo" href="#home">Repo Scout<span>.</span></a>
+        <div class="nav-links">
+          <a href="#home">Home</a>
+          <a href="#search">Search</a>
+          <a href="#about">About</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero container" aria-labelledby="hero-title">
+        <p class="eyebrow">GitHub Repository Explorer</p>
+        <h1 id="hero-title">Find the work<br />behind the name.</h1>
+        <p class="hero-copy">Enter a GitHub username to browse their public repositories, languages, and stars.</p>
+      </section>
+
+      <section id="search" class="search-section container" aria-labelledby="search-title">
+        <h2 id="search-title" class="visually-hidden">Repository search</h2>
+        <form id="search-form" novalidate>
+          <label for="username">GitHub username</label>
+          <div class="search-row">
+            <input id="username" name="username" type="text" autocomplete="off" placeholder="e.g. octocat" required />
+            <button type="submit">Search</button>
+          </div>
+          <p id="validation-message" class="validation-message" aria-live="polite"></p>
+        </form>
+
+        <div id="controls" class="controls" hidden>
+          <label>
+            Language
+            <select id="language-filter">
+              <option value="all">All</option>
+            </select>
+          </label>
+          <label>
+            Sort by
+            <select id="sort-order">
+              <option value="name">Repository name</option>
+              <option value="stars">Stars</option>
+            </select>
+          </label>
+        </div>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <div id="repository-grid" class="repository-grid"></div>
+      </section>
+
+      <section id="about" class="about container" aria-labelledby="about-title">
+        <p class="eyebrow">About</p>
+        <h2 id="about-title">A small window into open source.</h2>
+        <p>Repo Scout uses the GitHub REST API to turn a public profile into a clear, searchable list of repositories.</p>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">Built for Advanced Web Technologies · 2026</div>
+    </footer>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>
