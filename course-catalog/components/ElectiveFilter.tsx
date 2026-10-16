@@ -4,7 +4,6 @@ import useSWR from "swr";
 import { useState } from "react";
 import type { Course } from "@/lib/courses";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const fetcher = async (url: string): Promise<Course[]> => {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Failed to load courses (${response.status})`);
@@ -13,7 +12,7 @@ const fetcher = async (url: string): Promise<Course[]> => {
 
 export default function ElectiveFilter() {
   const [electivesOnly, setElectivesOnly] = useState(false);
-  const endpoint = `${API_URL}/courses${electivesOnly ? "?is_elective=true" : ""}`;
+  const endpoint = `/api/courses${electivesOnly ? "?is_elective=true" : ""}`;
   const { data, error, isLoading } = useSWR<Course[]>(endpoint, fetcher);
 
   if (isLoading) return <p>Loading courses…</p>;

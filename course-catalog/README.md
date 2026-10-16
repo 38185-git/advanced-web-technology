@@ -39,7 +39,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 
 ## Bonus decisions
 
-The rewrite `/api/:path*` forwards requests through Next.js, while direct browser requests use the explicit CORS contract. OpenAPI-shaped types are kept in `lib/schema.d.ts` and `Course` is derived from the generated schema shape. Explicit CORS method/header lists reduce accidental exposure; the environment variable supports a second local origin when needed. `cache: "no-store"` keeps the catalog and likes current, so the build does not freeze API data.
+The rewrite `/api/:path*` forwards the browser filter through Next.js, while the like and enrollment demonstrate direct CORS requests. `lib/schema.d.ts` contains the OpenAPI `components.schemas` contract and `Course` is derived from it. Explicit CORS method/header lists reduce accidental exposure; the environment variable supports a second local origin when needed. `cache: "no-store"` keeps the catalog and likes current, so the build does not freeze API data.
 
 ## Breakage journal
 
