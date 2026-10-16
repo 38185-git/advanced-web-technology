@@ -37,9 +37,15 @@ API_URL=http://localhost:8000
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-## Bonus decisions
+## Bonus tasks
 
-The rewrite `/api/:path*` forwards the browser filter through Next.js, while the like and enrollment demonstrate direct CORS requests. `lib/schema.d.ts` contains the OpenAPI `components.schemas` contract and `Course` is derived from it. Explicit CORS method/header lists reduce accidental exposure; the environment variable supports a second local origin when needed. `cache: "no-store"` keeps the catalog and likes current, so the build does not freeze API data.
+1. Rewrites: `/api/:path*` forwards the browser filter through Next.js. The filter requests `/api/courses?is_elective=true`; the like and enrollment keep direct API URLs to demonstrate CORS and preflight.
+2. OpenAPI types: `lib/schema.d.ts` contains the `components.schemas` contract produced from the backend OpenAPI schema; `Course` is imported from that contract instead of being duplicated.
+3. Environment CORS origins: the backend reads `CORS_ORIGINS`, splits comma-separated origins, and defaults to `http://localhost:3000`. For example: `CORS_ORIGINS="http://localhost:3000,http://127.0.0.1:3000"`.
+4. Frozen data experiment: after temporarily removing `cache: "no-store"`, `npm run build` and `npm run start` serve the `/courses` value captured during build, while `/courses/[id]` remains dynamic and reads the current like count. Restoring `cache: "no-store"` makes `/courses` current again.
+5. Explicit CORS lists: `allow_methods=["GET", "POST"]` and `allow_headers=["Content-Type"]` keep the required requests working; an `OPTIONS` request for `DELETE` or `Authorization` receives 400, preventing methods and headers that the app does not need.
+
+The rewrite bonus was checked with the browser filter and the explicit CORS bonus with preflight requests. The working submission keeps CORS enabled because the required like and enrollment checks must remain demonstrable.
 
 ## Breakage journal
 
