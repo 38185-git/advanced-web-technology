@@ -2,11 +2,7 @@ import type { components } from "@/lib/schema";
 
 export type Course = components["schemas"]["Course"];
 
-const API_URL = process.env.API_URL;
-
-if (!API_URL) {
-  throw new Error("API_URL is not configured");
-}
+const API_URL = process.env.API_URL ?? "http://localhost:8000";
 
 export async function getCourses(): Promise<Course[]> {
   const response = await fetch(`${API_URL}/courses`, { cache: "no-store" });
