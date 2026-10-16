@@ -22,6 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <div className="flex gap-1 text-sm font-medium sm:gap-2">
               <Link href="/" className="px-3 py-2 hover:bg-index">Home</Link>
               <Link href="/courses" className="px-3 py-2 hover:bg-index">Courses</Link>
+              <Link href="/filter" className="px-3 py-2 hover:bg-index">Filter</Link>
               <Link href="/about" className="px-3 py-2 hover:bg-index">About</Link>
             </div>
           </nav>
