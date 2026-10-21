@@ -23,3 +23,4 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/about` | Information about the project |
 | `/courses` | Course list |
 | `/courses/[id]` | Course details and like button |
+# advanced-web-technology
