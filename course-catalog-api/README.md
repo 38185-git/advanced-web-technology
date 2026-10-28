@@ -16,7 +16,7 @@ On this NixOS workspace PostgreSQL 17 is installed in the user Nix profile, with
 ```sh
 pg_ctl -D ~/.local/share/postgresql \
   -l ~/.local/share/postgresql/server.log \
-  -o "-h 127.0.0.1 -k ~/.local/share/postgresql -p 5432" start
+  -o "-h 127.0.0.1 -k /home/nixos/.local/share/postgresql -p 5432" start
 ```
 
 Stop it with `pg_ctl -D ~/.local/share/postgresql stop`.
