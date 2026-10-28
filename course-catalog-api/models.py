@@ -10,6 +10,7 @@ from sqlalchemy import (
     text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.schema import conv
 
 from db import Base
 
@@ -38,7 +39,9 @@ class Student(Base):
     __tablename__ = "students"
     __table_args__ = (
         CheckConstraint("char_length(name) >= 2", name="name"),
-        CheckConstraint("position('@' IN email) > 1", name="email_format"),
+        CheckConstraint(
+            "position('@' IN email) > 1", name=conv("students_email_format")
+        ),
     )
 
     id: Mapped[int] = mapped_column(BigInteger, Identity(always=True), primary_key=True)

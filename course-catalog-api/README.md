@@ -11,6 +11,16 @@ CREATE ROLE catalog_app LOGIN PASSWORD 'change-me';
 CREATE DATABASE course_catalog OWNER catalog_app;
 ```
 
+On this NixOS workspace PostgreSQL 17 is installed in the user Nix profile, with its persistent cluster in `~/.local/share/postgresql`. Start the local server with:
+
+```sh
+pg_ctl -D ~/.local/share/postgresql \
+  -l ~/.local/share/postgresql/server.log \
+  -o "-h 127.0.0.1 -k ~/.local/share/postgresql -p 5432" start
+```
+
+Stop it with `pg_ctl -D ~/.local/share/postgresql stop`.
+
 From `course-catalog-api/`:
 
 ```sh
@@ -89,7 +99,7 @@ For a database that already has the Lab 6 schema and data, do not run migration 
 
 ## Experiment log
 
-These are the expected observations described in the lab instructions. They explain the controlled breakages and their fixes; the database-dependent experiments need to be repeated against the local server to capture that server's exact output.
+All eight controlled breakages were run on the scratch database and the code, schema, and migration chain were restored afterward. The observed messages matched the causes and fixes below.
 
 | # | Experiment | What the output shows | Cause | Fix |
 |---|---|---|---|---|
@@ -115,11 +125,11 @@ These are the expected observations described in the lab instructions. They expl
 | Goal and steps | Yes. Add required course level in three explicit upgrade operations. |
 | Data | Yes. Existing electives become `beginner`; other existing courses become `intermediate`; then NULL is forbidden. |
 | Renames and drops | Yes. No rename is involved; downgrade drops only the added `level` column. |
-| Rollback | Yes by migration design: downgrade removes `level`, and a later upgrade deterministically backfills it again. Run the cycle locally before submission. |
-| Verification | Migration SQL is available with `alembic upgrade 0001:0002 --sql`; run `alembic check` and upgrade → downgrade → upgrade against PostgreSQL. |
+| Rollback | Yes. The downgrade removes `level`, and the upgrade deterministically backfills it again; the cycle passed on PostgreSQL 17.11. |
+| Verification | Migration SQL is available with `alembic upgrade 0001:0002 --sql`; `alembic check` is clean and upgrade → downgrade → upgrade passed. |
 | History | Yes. The committed migration chain has one head: 0002 follows 0001. |
 | Application | Yes. `CourseOut` returns the new required field and `GET /courses` supports `level`; seed data includes it. |
 
 ## Verification status
 
-Source files, schema, seed data, migration definitions, and README are prepared. This workspace did not provide `psql` or a reachable PostgreSQL server, so database connection, live API requests, `alembic check`, migration cycle, SQLSTATE output, and the `try_errors.py` run remain to be executed locally using the commands above. No live results are claimed here.
+Verified on PostgreSQL 17.11: `check_db.py` connects; `check_models.py` reports 6, 3, and 6 rows with no name differences; `alembic check` is clean; upgrade → downgrade → upgrade passes; clean-start migrations and seed pass; all routes were exercised; `try_errors.py` reports 5 of 5; N+1 reports 7 versus 2 queries; lost update reports 12 versus 13; and deleting student 3 cascades from 6 to 5 enrollments. The CHECK and rename bonus migrations also passed and were removed afterward. The persistent local `course_catalog` database has been reseeded to 6 courses, 3 students, and 6 enrollments.
