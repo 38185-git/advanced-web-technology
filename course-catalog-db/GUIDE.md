@@ -1,4 +1,4 @@
-# course-catalog-db
+# Course Catalog database guide
 
 PostgreSQL schema and query exercises for Lab 6, Advanced Web Technologies.
 
