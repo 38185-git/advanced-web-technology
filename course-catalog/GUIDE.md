@@ -1,4 +1,4 @@
-# Course Catalog
+# Course Catalog frontend guide
 
 A small course catalog built for the Advanced Web Technologies course. Lab 5 connects the Next.js frontend to the FastAPI backend.
 
