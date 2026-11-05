@@ -1,4 +1,4 @@
-# Course Catalog API guide
+# Course Catalog API
 
 Course Catalog backend: FastAPI, SQLAlchemy, PostgreSQL, and Alembic migrations (Labs 4–7, Advanced Web Technologies).
 
