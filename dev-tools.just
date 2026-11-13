@@ -9,7 +9,7 @@ nix-format:
     nixfmt flake.nix
 
 secrets-check:
-    gitleaks git --log-opts="-1" --redact
+    gitleaks git --log-opts="--all" --redact
 
 hooks:
     git config core.hooksPath .githooks

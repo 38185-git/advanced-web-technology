@@ -1,29 +1,13 @@
-from sqlalchemy import event, select
-from sqlalchemy.orm import Session, selectinload
+import httpx
 
-from db import engine
-from models import Course
+URL = "http://localhost:8000/graphql"
+QUERIES = [
+    ("students → enrollments → course", "{ students { name enrollments { course { title } } } }"),
+    ("enrollments → course, student", "{ enrollments { id course { title } student { name } } }"),
+]
 
-# Open the first connection before counting application queries.
-with engine.connect():
-    pass
-
-queries: list[str] = []
-
-
-@event.listens_for(engine, "before_cursor_execute")
-def count_query(conn, cursor, statement, parameters, context, executemany):
-    queries.append(statement)
-
-
-def count_enrollments(*options):
-    queries.clear()
-    with Session(engine) as session:
-        courses = session.scalars(select(Course).options(*options)).all()
-        total = sum(len(course.enrollments) for course in courses)
-    return total, len(queries)
-
-
-for name, options in (("lazy", []), ("selectinload", [selectinload(Course.enrollments)])):
-    total, query_count = count_enrollments(*options)
-    print(f"{name:13} enrollments: {total}, queries: {query_count}")
+for title, query in QUERIES:
+    response = httpx.post(URL, json={"query": query})
+    response.raise_for_status()
+    rows = len(next(iter(response.json()["data"].values())))
+    print(f"{title:<34} rows: {rows:<3} SQL queries: {response.headers['x-sql-queries']}")
