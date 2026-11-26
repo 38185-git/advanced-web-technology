@@ -17,10 +17,16 @@ SCRIPTS = [
 ]
 
 if __name__ == "__main__":
-    os.chdir(Path(__file__).parent)
+    api_root = Path(__file__).resolve().parents[2] / "course-catalog-api"
     failed = []
     for script in SCRIPTS:
-        result = subprocess.run([sys.executable, script], text=True, capture_output=True)
+        result = subprocess.run(
+            [sys.executable, str(Path(__file__).with_name(script))],
+            cwd=api_root,
+            env={**os.environ, "PYTHONPATH": str(api_root)},
+            text=True,
+            capture_output=True,
+        )
         print(f"\n--- {script} ---\n{result.stdout}", flush=True)
         if result.returncode or "FAIL" in result.stdout:
             failed.append(script)

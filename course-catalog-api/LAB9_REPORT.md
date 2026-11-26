@@ -63,11 +63,11 @@ REST/Swagger: http://localhost:8000/docs, GraphiQL: http://localhost:8000/graphq
 ### Проверки
 
 ```bash
-python run_lab9_checks.py
+python ../scripts/checks/run_lab9_checks.py
 ```
 
-`run_lab9_checks.py` запускает 12 скриптов и завершается с ненулевым кодом
-при `FAIL` или ошибке процесса. `try_access.py` создаёт и очищает записи для
+`../scripts/checks/run_lab9_checks.py` запускает проверки Lab 9 и бонусов, завершается с ненулевым кодом
+при `FAIL` или ошибке процесса. `../scripts/checks/try_access.py` создаёт и очищает записи для
 `web-security`; запускать проверки только на учебной базе.
 
 Проверено 26.11.2026 на отдельном PostgreSQL 17.11, порт 55439:
@@ -96,7 +96,7 @@ python run_lab9_checks.py
 
 ### Матрица доступа
 
-Коды из `try_access.py`. У администратора нет собственного профиля студента.
+Коды из `../scripts/checks/try_access.py`. У администратора нет собственного профиля студента.
 
 | Запрос | Аноним | Студент | Администратор |
 |---|---|---|---|
@@ -220,7 +220,7 @@ Cookie HttpOnly не читается через document.cookie. В localStorag
 
 ### 1. Закрытый по умолчанию router
 
-`try_closed_router.py` создаёт `APIRouter` с общей зависимостью
+`../scripts/checks/try_closed_router.py` создаёт `APIRouter` с общей зависимостью
 `Depends(get_current_user)` и временным `/secret`. Сам обработчик не содержит
 проверки токена: анонимный запрос получает 401 и `WWW-Authenticate: Bearer`,
 а пользователь с токеном — 200. В основной схеме демонстрационный маршрут не
@@ -252,8 +252,8 @@ Cookie HttpOnly не читается через document.cookie. В localStorag
 
 ```bash
 alembic upgrade head
-python try_closed_router.py   # 3 of 3
-python try_hash_upgrade.py    # 3 of 3
-python try_logout_all.py      # 4 of 4
+python ../scripts/checks/try_closed_router.py   # 3 of 3
+python ../scripts/checks/try_hash_upgrade.py    # 3 of 3
+python ../scripts/checks/try_logout_all.py      # 4 of 4
 alembic check
 ```
