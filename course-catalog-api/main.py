@@ -1,10 +1,13 @@
 from typing import Annotated
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
+
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+import auth
+from auth import AdminUser, CurrentUser, can_access_student
 from db import get_db
 import counter
 import problem
@@ -19,15 +22,21 @@ from schemas import (
     EnrollmentOut,
     StudentIn,
     StudentOut,
+    UserOut,
 )
 
 app = FastAPI(title="Course Catalog API")
 problem.install(app)
 counter.install(app)
+app.include_router(auth.router)
 app.include_router(graphql_app, prefix="/graphql")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -40,6 +49,11 @@ def pagination(page: int = 1, page_size: int = 20):
 @app.get("/")
 def read_root():
     return {"message": "Course Catalog API is running"}
+
+
+@app.get("/me", response_model=UserOut)
+def me(user: CurrentUser):
+    return user
 
 
 @app.get("/courses", response_model=list[CourseOut])
@@ -82,7 +96,9 @@ def create_student(data: StudentIn, db: SessionDep):
 
 
 @app.post("/enrollments", response_model=EnrollmentOut, status_code=201)
-def create_enrollment(data: EnrollmentIn, db: SessionDep):
+def create_enrollment(data: EnrollmentIn, db: SessionDep, user: CurrentUser):
+    if not can_access_student(user, data.student_id):
+        raise HTTPException(403, "You can enroll only yourself")
     return services.enroll(db, data.course_id, data.student_id)
 
 
@@ -103,7 +119,7 @@ def enrollment_details():
 
 
 @app.get("/enrollments", response_model=list[EnrollmentDetail])
-def list_enrollments(db: SessionDep):
+def list_enrollments(db: SessionDep, _: AdminUser):
     return db.execute(enrollment_details()).all()
 
 
