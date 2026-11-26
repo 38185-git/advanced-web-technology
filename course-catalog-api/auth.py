@@ -36,7 +36,7 @@ def login(form: Annotated[OAuth2PasswordRequestForm, Depends()], db: SessionDep)
     user = authenticate(db, form.username, form.password)
     if user is None:
         raise unauthorized("Incorrect email or password")
-    return Token(access_token=create_access_token(user.id))
+    return Token(access_token=create_access_token(user.id, user.token_version))
 
 
 def get_optional_user(
@@ -45,11 +45,11 @@ def get_optional_user(
     if token is None:
         return None
     try:
-        user_id = read_access_token(token)
+        user_id, version = read_access_token(token)
     except jwt.InvalidTokenError:
         raise unauthorized("Invalid or expired token") from None
     user = db.get(User, user_id)
-    if user is None:
+    if user is None or user.token_version != version:
         raise unauthorized("Invalid or expired token")
     return user
 
@@ -61,6 +61,12 @@ def get_current_user(user: Annotated[User | None, Depends(get_optional_user)]) -
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+@router.post("/logout-all", status_code=204)
+def logout_all(user: CurrentUser, db: SessionDep):
+    user.token_version += 1
+    db.commit()
 
 
 def require_admin(user: CurrentUser) -> User:
