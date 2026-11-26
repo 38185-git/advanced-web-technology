@@ -24,7 +24,10 @@ def unauthorized(detail: str) -> HTTPException:
 def authenticate(db: Session, email: str, password: str) -> User | None:
     user = db.scalar(select(User).where(User.email == email))
     hashed = user.password_hash if user else DUMMY_HASH
-    valid = password_hash.verify(password, hashed)
+    valid, new_hash = password_hash.verify_and_update(password, hashed)
+    if user is not None and valid and new_hash is not None:
+        user.password_hash = new_hash
+        db.commit()
     return user if user and valid else None
 
 
