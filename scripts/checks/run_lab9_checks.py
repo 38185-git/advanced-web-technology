@@ -12,14 +12,21 @@ SCRIPTS = [
     "check_users.py", "try_auth.py", "try_tokens.py", "try_access.py",
     "try_errors.py", "try_graphql_access.py", "try_graphql.py",
     "try_n_plus_1.py", "measure.py", "try_timing.py",
-    "scan_routes.py", "scan_graphql.py",
+    "scan_routes.py", "scan_graphql.py", "try_closed_router.py",
+    "try_hash_upgrade.py", "try_logout_all.py",
 ]
 
 if __name__ == "__main__":
-    os.chdir(Path(__file__).parent)
+    api_root = Path(__file__).resolve().parents[2] / "course-catalog-api"
     failed = []
     for script in SCRIPTS:
-        result = subprocess.run([sys.executable, script], text=True, capture_output=True)
+        result = subprocess.run(
+            [sys.executable, str(Path(__file__).with_name(script))],
+            cwd=api_root,
+            env={**os.environ, "PYTHONPATH": str(api_root)},
+            text=True,
+            capture_output=True,
+        )
         print(f"\n--- {script} ---\n{result.stdout}", flush=True)
         if result.returncode or "FAIL" in result.stdout:
             failed.append(script)

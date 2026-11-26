@@ -1,6 +1,5 @@
 # Course Catalog API
 
-Отчёт по Lab 9: [JWT, роли, матрица доступа, угрозы и эксперименты](LAB9_REPORT.md).
 
 Backend для каталога курсов. Используются FastAPI, PostgreSQL, SQLAlchemy, Alembic и GraphQL.
 
@@ -30,12 +29,12 @@ GraphQL: http://localhost:8000/graphql
 
 ~~~bash
 alembic check
-python check_db.py
-python check_models.py
-python try_errors.py
-python try_lost_update.py
-python try_delete.py
-python try_n_plus_1_orm.py
+python ../scripts/checks/check_db.py
+python ../scripts/checks/check_models.py
+python ../scripts/checks/try_errors.py
+python ../scripts/checks/try_lost_update.py
+python ../scripts/checks/try_delete.py
+python ../scripts/checks/try_n_plus_1_orm.py
 ~~~
 
 ## Lab 8
@@ -50,10 +49,10 @@ python try_n_plus_1_orm.py
 Проверки:
 
 ~~~bash
-python try_graphql.py
-python try_n_plus_1.py
-python try_protection.py
-python measure.py
+python ../scripts/checks/try_graphql.py
+python ../scripts/checks/try_n_plus_1.py
+python ../scripts/checks/try_protection.py
+python ../scripts/checks/measure.py
 ~~~
 
 ## Бонусы
@@ -62,12 +61,12 @@ python measure.py
 
 - Lab 7: `bonus_examples/lab7_bonus_1_check.py` — CHECK для `level`;
   `bonus_examples/lab7_bonus_2_rename.py` — переименование `description` в `summary`;
-  `try_n_plus_1_orm.py` — N+1 и `selectinload`;
-  `try_lost_update.py` — lost update;
-  `models.py` и `try_delete.py` — cascade/passive deletes.
-- Lab 8: `problem.py` и `try_post.py` — Problem Details для validation errors;
+  `../scripts/checks/try_n_plus_1_orm.py` — N+1 и `selectinload`;
+  `../scripts/checks/try_lost_update.py` — lost update;
+  `models.py` и `../scripts/checks/try_delete.py` — cascade/passive deletes.
+- Lab 8: `problem.py` и `../scripts/checks/try_post.py` — Problem Details для validation errors;
   `services.py` и `graphql_api.py` — `createStudent` с общей бизнес-логикой;
-  `blocking_app.py` и `blocking_client.py` — blocking resolver.
+  `../scripts/experiments/blocking_app.py` и `../scripts/experiments/blocking_client.py` — blocking resolver.
 
 Полное описание и ссылки: [BONUS_TASKS.md](BONUS_TASKS.md).
 
@@ -96,20 +95,279 @@ python measure.py
 
 ### Bonus 3: N+1 и lost update
 
-`try_n_plus_1_orm.py` сравнивает ленивую загрузку связей с `selectinload`: ленивый вариант выполняет отдельный запрос для каждого курса, а `selectinload` загружает связи дополнительным пакетным запросом. `try_n_plus_1.py` проверяет GraphQL DataLoader: оба запроса выполняются с фиксированным небольшим числом SQL-запросов вместо запроса на каждую связь.
+`../scripts/checks/try_n_plus_1_orm.py` сравнивает ленивую загрузку связей с `selectinload`: ленивый вариант выполняет отдельный запрос для каждого курса, а `selectinload` загружает связи дополнительным пакетным запросом. `../scripts/checks/try_n_plus_1.py` проверяет GraphQL DataLoader: оба запроса выполняются с фиксированным небольшим числом SQL-запросов вместо запроса на каждую связь.
 
-`try_lost_update.py` сначала воспроизводит потерю обновления при чтении, изменении и записи значения в двух сессиях, затем использует выражение `likes = likes + 1`, вычисляемое базой данных атомарно. Скрипт восстанавливает исходное значение в `finally`.
+`../scripts/checks/try_lost_update.py` сначала воспроизводит потерю обновления при чтении, изменении и записи значения в двух сессиях, затем использует выражение `likes = likes + 1`, вычисляемое базой данных атомарно. Скрипт восстанавливает исходное значение в `finally`.
 
 ### Bonus 4: каскадное удаление
 
-Связь `students → enrollments` использует `ON DELETE CASCADE`, а `passive_deletes=True` оставляет удаление базе данных. Для курсов задан `ON DELETE RESTRICT`, поэтому курс с зачислениями удалить нельзя. Поведение проверяется `try_delete.py`.
+Связь `students → enrollments` использует `ON DELETE CASCADE`, а `passive_deletes=True` оставляет удаление базе данных. Для курсов задан `ON DELETE RESTRICT`, поэтому курс с зачислениями удалить нельзя. Поведение проверяется `../scripts/checks/try_delete.py`.
 
 ### Bonus 5: блокирующий resolver
 
-В `blocking_app.py` синхронный GraphQL resolver вызывает блокирующий запрос прямо в event loop и обслуживает четыре параллельных запроса последовательно. REST `def` выполняется FastAPI в thread pool, а `slow_threadpool` явно использует `run_in_threadpool`, поэтому четыре ожидания `pg_sleep(0.5)` выполняются примерно за 0.5 секунды. Для коротких запросов приложения разница мала, но для медленных внешних или БД-операций синхронный resolver блокирует обработку остальных запросов.
+В `../scripts/experiments/blocking_app.py` синхронный GraphQL resolver вызывает блокирующий запрос прямо в event loop и обслуживает четыре параллельных запроса последовательно. REST `def` выполняется FastAPI в thread pool, а `slow_threadpool` явно использует `run_in_threadpool`, поэтому четыре ожидания `pg_sleep(0.5)` выполняются примерно за 0.5 секунды. Для коротких запросов приложения разница мала, но для медленных внешних или БД-операций синхронный resolver блокирует обработку остальных запросов.
 
 ### Lab 8: GraphQL и frontend
 
 GraphQL содержит запросы курсов, студентов и зачислений, мутации `enroll`, `likeCourse` и `createStudent`, DataLoader для связанных сущностей, ограничение глубины 5 и максимум 10 aliases. REST и GraphQL используют один слой `services.py`, поэтому правило имени студента реализовано один раз и возвращается в формате каждой транспортной границы.
 
-`try_graphql.py` проверяет 8 сценариев, `try_errors.py` — 5 REST-ошибок, `try_protection.py` — глубину, aliases, лимиты, неверные ID и introspection, `measure.py` сравнивает REST и GraphQL для страницы My Courses, а `blocking_client.py` демонстрирует влияние синхронного resolver.
+`../scripts/checks/try_graphql.py` проверяет 8 сценариев, `../scripts/checks/try_errors.py` — 5 REST-ошибок, `../scripts/checks/try_protection.py` — глубину, aliases, лимиты, неверные ID и introspection, `../scripts/checks/measure.py` сравнивает REST и GraphQL для страницы My Courses, а `../scripts/experiments/blocking_client.py` демонстрирует влияние синхронного resolver.
+## Lab 9: вход и права доступа
+
+Реализованы JWT (HS256, 15 минут), Argon2id, роли `admin`/`student`,
+проверка владельца записи и права на поля GraphQL. Frontend находится в
+`../course-catalog`: `/login`, `/account`, Server Actions, cookie и DAL.
+
+### Запуск с чистой базы
+
+Нужны Python 3.11+, PostgreSQL 16+, Node.js 20.9+ и npm.
+Один раз от имени администратора PostgreSQL:
+
+```sql
+CREATE ROLE catalog_app LOGIN PASSWORD 'change-me';
+CREATE DATABASE course_catalog OWNER catalog_app;
+```
+
+Из `course-catalog-api`:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+python -c "import secrets; print(secrets.token_hex(32))"
+# Вставить результат в SECRET_KEY в .env; проверить DATABASE_URL.
+alembic upgrade head
+psql -h localhost -U catalog_app -d course_catalog -v ON_ERROR_STOP=1 -f seed.sql
+python seed_users.py
+alembic check
+fastapi dev main.py
+```
+
+`seed.sql` предназначен для учебной базы: очищает также `users`. После него
+обязательно выполнять `seed_users.py`. Нельзя запускать seed на базе с нужными данными.
+Значение `SECRET_KEY` не хранится в Git; в `.env.example` оно пустое.
+Без ключа или с ключом короче 32 символов приложение не запускается.
+
+Во втором терминале из `course-catalog`:
+
+```bash
+npm ci
+cp .env.example .env.local
+npm run dev
+```
+
+Открыть http://localhost:3000/login в Chrome/Chromium или Firefox.
+REST/Swagger: http://localhost:8000/docs, GraphiQL: http://localhost:8000/graphql.
+Использовать localhost: cookie всегда имеет `Secure`; для другого хоста нужен HTTPS.
+
+| E-mail | Роль | Профиль | Учебный пароль |
+|---|---|---|---|
+| admin@example.com | admin | — | admin-demo-password |
+| aigerim@example.com | student | 1 | aigerim-demo-pass |
+| daniyar@example.com | student | 2 | daniyar-demo-pass |
+| asel@example.com | student | 3 | asel-demo-password |
+
+Пароли в таблице — демонстрационные. В БД находятся только Argon2id-хеши.
+`POST /auth/login` принимает форму `username=...&password=...`, не JSON.
+Токен передаётся как `Authorization: Bearer <token>`, в GraphiQL — через Headers.
+`Token` использует OAuth2-поля `access_token` и `token_type`; `/me` — camelCase.
+В ответах нет `password_hash`.
+
+### Проверки
+
+```bash
+python ../scripts/checks/run_lab9_checks.py
+```
+
+`../scripts/checks/run_lab9_checks.py` запускает проверки Lab 9 и бонусов, завершается с ненулевым кодом
+при `FAIL` или ошибке процесса. `../scripts/checks/try_access.py` создаёт и очищает записи для
+`web-security`; запускать проверки только на учебной базе.
+
+Проверено 26.11.2026 на отдельном PostgreSQL 17.11, порт 55439:
+миграции с пустой базы `0001 → 0002 → 0003`, `seed.sql`, `seed_users.py`,
+`alembic check` — `No new upgrade operations detected`.
+Основная база проекта при проверке не очищалась.
+
+| Проверка | Результат |
+|---|---|
+| check_users | 4/4 |
+| try_auth | 6/6 |
+| try_tokens | 9/9 |
+| try_access | 14/14 |
+| try_errors | 5/5 |
+| try_graphql_access | 9/9 |
+| try_graphql | 8/8 |
+| try_n_plus_1 | 4 SQL-запроса для обеих выборок, включая SELECT пользователя |
+| try_timing, 40 запросов на случай | неизвестный e-mail: 83.4 мс; известный: 83.2 мс |
+| scan_routes | 11 маршрутов, 8 открытых |
+| scan_graphql | 11 полей, 3 закрытых |
+
+Полный вывод: [checks.txt](lab9-results/checks.txt).
+Результаты изолированных экспериментов: [experiments.json](lab9-results/experiments.json).
+Сохранена обработка validation errors из Lab 8: `422 application/problem+json`.
+Это отличается от стандартного `422 application/json`, приведённого в методичке.
+
+### Матрица доступа
+
+Коды из `../scripts/checks/try_access.py`. У администратора нет собственного профиля студента.
+
+| Запрос | Аноним | Студент | Администратор |
+|---|---|---|---|
+| GET /courses | 200 | 200 | 200 |
+| GET /me | 401 | 200 | 200 |
+| GET /enrollments | 401 | 403 | 200 |
+| POST /enrollments, себе | 401 | 201 | — |
+| POST /enrollments, другому | 401 | 403 | 201 |
+
+401 означает отсутствие действительной аутентификации и содержит
+`WWW-Authenticate: Bearer`; 403 означает недостаточные права и не содержит этот
+заголовок. Оба ответа используют Problem Details. В GraphQL отказ поля приходит
+с HTTP 200, `errors` и `path`; неверный токен отвергается до выполнения GraphQL с HTTP 401.
+
+### Открытые места
+
+По условию Lab 9 эти места пока не закрываются. Это учебный промежуточный
+результат, а не законченная защита приложения. 16 строк ниже соответствуют
+двум сканерам; предложения предназначены для финального проекта.
+
+| Маршрут или поле | Оценка и последствия | Как закрыть |
+|---|---|---|
+| GET / | Намеренно: сообщение о работе API | Оставить публичным, без внутренних деталей |
+| GET /courses | Намеренно: публичный каталог | Оставить публичным |
+| GET /courses/{id} | Намеренно: карточка курса | Оставить публичным |
+| POST /courses/{id}/like | Дыра: аноним накручивает likes | CurrentUser, уникальная пара user/course, ограничение частоты |
+| POST /students | Дыра: любой создаёт профили | AdminUser либо отдельная регистрация с проверкой e-mail |
+| GET /students/{id} | Дыра: доступны чужие профили и e-mail | Владелец/admin; отдельный публичный DTO без e-mail |
+| GET /students/{id}/enrollments | Дыра: видны чужие курсы | Владелец/admin |
+| GET /stats/courses | Намеренно: агрегированное количество записей | Оставить публичным, не добавлять личные данные |
+| Query.courses | Намеренно: публичный каталог | Оставить публичным |
+| Query.course | Намеренно: карточка курса | Оставить публичным |
+| Query.student | Дыра: доступен чужой профиль, хотя email закрыт | Владелец/admin либо отдельный публичный тип |
+| Query.enrollments | Дыра: аноним видит все зачисления | IsAdmin либо фильтр по текущему студенту |
+| Course.enrollments | Дыра: виден состав студентов курса | Проверка доступа на поле, admin/преподаватель |
+| Student.enrollments | Дыра: видны курсы любого студента | IsSelfOrAdmin на поле |
+| Mutation.enroll | Дыра: обход REST-проверки, запись другого студента | Общая проверка пользователя и владельца в сервисе для обоих API |
+| Mutation.likeCourse | Дыра: аноним меняет счётчик | Общая проверка пользователя и уникальности лайка |
+
+В проекте есть и бонусная `Mutation.createStudent` из Lab 8, которой нет в
+11 пробах методички. Она также открыта и требует тех же ограничений, что
+`POST /students`. Список проб GraphQL фиксирован; в отличие от REST-сканера,
+он сам не обнаружит новый resolver. `GET /students/{id}` по-прежнему раскрывает
+email через REST: одной защиты `Student.email` недостаточно для всего приложения.
+
+### Таблица угроз
+
+| Область | Что может пойти не так | Что реализовано | Проверка |
+|---|---|---|---|
+| Форма входа | Перебор паролей и определение зарегистрированных адресов | Одинаковая ошибка; `DUMMY_HASH` в auth.py; лимита попыток пока нет | try_auth 6/6; HTTP-медианы 83.4/83.2 мс, эксперимент 2 |
+| Пароли и ключ | Утечка паролей, слабый или опубликованный ключ | Argon2id, m=65536 KiB/t=3/p=4; обязательный ключ ≥32 символов; .env игнорируется | check_users 4/4, эксперимент 1 |
+| Токен и роль | Подделка подписи, отсутствие exp, устаревшие полномочия | HS256 allowlist, iss, обязательные exp/sub/iss; пользователь и роль из БД | try_tokens 9/9, эксперименты 3–4 |
+| Доступ к объектам | BOLA, обход через другой маршрут или связь GraphQL | REST owner-check; IsSelfOrAdmin на nullable Student.email | try_access 14/14; try_graphql_access 9/9; эксперименты 5–6; открытые места выше |
+| Cookie и Next.js | Кража токена через JS, CSRF, поддельная cookie | HttpOnly/Secure/SameSite=Lax/Path=/; Server Actions; proxy + DAL /me | Проверки frontend и эксперимент 7 |
+| Выход и срок жизни | Скопированный токен действует после выхода | Удаление cookie, JWT exp через 900 секунд; отзыва пока нет | Эксперимент 8 |
+
+Для ограничения перебора я бы использовал Redis с TTL и атомарными счётчиками,
+общими для всех процессов: лимиты по IP и паре IP/e-mail, с постепенным замедлением.
+Память одного процесса не синхронизируется с другими. Блокировка только по e-mail
+позволила бы атакующему заблокировать вход чужому пользователю; Redis добавляет
+отдельный сервис, расходы и необходимость определить поведение при его отказе.
+
+Для отзыва токенов в этом проекте подходит `token_version` в users и claim `ver`:
+выход со всех устройств увеличивает версию, каждый запрос сравнивает её с БД.
+SELECT пользователя уже выполняется. Цена — миграция, запись при выходе и
+отсутствие отзыва одного устройства отдельно; для этого нужны сессии или jti.
+В основной версии Lab 9 отзыв не добавлен, как требует условие.
+
+### Журнал экспериментов
+
+Эксперименты 1–6 выполнены на отдельной тестовой БД. Небезопасные варианты
+работали только в памяти отдельного процесса через TestClient; сервер с
+отключённой защитой в сеть не выставлялся. Роли и созданная запись были
+восстановлены после проверок. Время зависит от компьютера и нагрузки.
+
+| № | Действие | Наблюдение | Причина | Восстановление |
+|---|---|---|---|---|
+| 1 | Убрать/укоротить ключ; дважды хешировать пароль | Ошибки missing/string_too_short; 101.5 мс; разные хеши, оба проходят verify; неверный пароль — false | Обязательная настройка; случайная соль; Argon2id m=65536,t=3,p=4 | Случайный ключ ≥32 символов, рекомендуемые параметры |
+| 2 | Сравнить authenticate с DUMMY_HASH и ранним return, 40 чередующихся вызовов | С защитой: 79.43/77.69 мс; без неё: 0.82/75.80 мс (неизвестный/известный), разница около 92 раз | Ранний return пропускает дорогой хеш; одинаковый текст ошибки не скрывает время | DUMMY_HASH проверяется при любом e-mail |
+| 3 | Девять токенов; отключить проверку подписи в изолированном процессе | С защитой 9/9; без неё шесть подделок приняты; edited payload и alg none дают admin@example.com | Непроверенный payload становится доверенной личностью; также отключены exp/iss | Вернуть проверку HS256, issuer и обязательных claims |
+| 4 | Поменять роль, не меняя токен | Admin: 200→403→200; student: 403→200→403 | Роль читается из users на каждый запрос | Обе роли возвращены к исходным |
+| 5 | Убрать owner-check | Запись чужого студента: 403→201→403 | Подлинный токен не доказывает право на переданный studentId; BOLA | Вернуть owner-check, удалить созданную запись |
+| 6 | Оставить защиту только на корне; затем сделать email non-null | Чужой e-mail раскрывается; с non-null student=null, во вложенном запросе data=null | К студенту ведут разные пути; ошибка non-null всплывает до nullable-родителя | Permission на Student.email, тип str или None |
+| 7 | Поддельная cookie; убрать DAL | Код и production-сборка проверены; браузерный опыт нужно повторить вручную по шагам задания | Proxy проверяет наличие cookie; API проверяет её содержимое | verifySession вызывается рядом с данными |
+| 8 | Сохранить токен, выйти и повторить /me | Код и срок JWT проверены; браузерный опыт нужно повторить вручную по шагам задания | Удаление cookie не отзывает уже подписанный токен | Короткий exp; отзыв — отдельное улучшение |
+
+JWT подписан, но не зашифрован: header/payload декодируются без ключа, доступны
+`sub`, `iss`, `iat`, `exp`; разница exp−iat — 900 секунд. Поэтому секретные данные
+и пароли в payload не помещаются. Соль уже входит в строку Argon2id; отдельная
+колонка не нужна. Быстрый SHA-256 облегчает массовый перебор паролей и не заменяет
+специальную функцию хеширования паролей.
+
+При BOLA подпись действительна: ошибка в разрешении операции, а не в проверке
+личности. Для расследования нужны журнал запросов с user id, целевым studentId
+и request id; сама таблица enrollments не хранит автора операции.
+
+### Решения
+
+- Роль читается из БД, поэтому отзыв прав действует сразу на тот же токен.
+  Цена — один SELECT на каждый аутентифицированный запрос. Для нашего каталога
+  это приемлемо; для банка немедленный отзыв также важнее экономии SELECT.
+  Редкость увольнений сама по себе не отменяет риск кражи аккаунта: claims с
+  ролью можно выбирать только с явно принятой задержкой отзыва и коротким TTL.
+- Permission находится на поле `Student.email`, а не только на `Query.students`:
+  до студента можно добраться через другие запросы и связи. Nullable-поле даёт
+  вернуть разрешённое имя вместе с email=null и errors, сохранив остальной ответ.
+- Proxy ускоряет редирект без cookie, но любая строка с именем session проходит
+  эту проверку. DAL вызывает `/me` рядом с данными и проверяет реальную сессию;
+  такую же проверку нужно вызывать в каждой защищённой странице и Server Action.
+
+Cookie HttpOnly не читается через document.cookie. В localStorage токен был бы
+доступен любому внедрённому скрипту. HttpOnly не устраняет XSS полностью: скрипт
+всё ещё может отправлять запросы от лица пользователя; SameSite и проверка Origin
+в Server Actions дополняют, но не заменяют серверную авторизацию.
+
+Структура этого проекта — один существующий monorepo, а не два отдельных GitHub
+репозитория из примера методички. История и публикация обсуждаются отдельно;
+команды выше относятся к соответствующим подпапкам.
+
+## Bonus (ветка `lab9-extras`)
+
+### 1. Закрытый по умолчанию router
+
+`../scripts/checks/try_closed_router.py` создаёт `APIRouter` с общей зависимостью
+`Depends(get_current_user)` и временным `/secret`. Сам обработчик не содержит
+проверки токена: анонимный запрос получает 401 и `WWW-Authenticate: Bearer`,
+а пользователь с токеном — 200. В основной схеме демонстрационный маршрут не
+остаётся. В такой router следует перенести личные профили и зачисления; публичный
+каталог курсов должен остаться в явно публичном router.
+
+### 2. Обновление старых Argon2-хешей
+
+`authenticate()` использует `verify_and_update`. Успешный вход заменяет хеш со
+старыми параметрами `m=1024,t=1,p=1` на рекомендуемые `m=65536,t=3,p=4`.
+Неверный пароль и неизвестный пользователь ничего в БД не меняют. Обновление
+происходит при входе, потому что только тогда сервер получает пароль в открытом
+виде. Хеш пользователя, который годами не входит, останется старым; для таких
+учётных записей нужна отдельная политика принудительного сброса пароля.
+
+### 3. Выход на всех устройствах
+
+Миграция `0004` добавляет `users.token_version` с начальным значением 0. JWT
+содержит claim `ver`; проверка сравнивает его с текущей версией пользователя.
+`POST /auth/logout-all` увеличивает версию, поэтому все ранее выпущенные токены
+сразу получают 401. Новый вход выпускает рабочий токен с новой версией.
+
+Это гарантирует одновременный отзыв всех токенов пользователя, но не позволяет
+отозвать одно устройство отдельно. Для этого понадобятся отдельные сессии или
+список `jti`. Frontend-кнопка «выйти на всех устройствах» должна сначала вызвать
+`POST /auth/logout-all` с Bearer-токеном, а после успешного ответа удалить cookie.
+
+Проверки бонусов:
+
+```bash
+alembic upgrade head
+python ../scripts/checks/try_closed_router.py   # 3 of 3
+python ../scripts/checks/try_hash_upgrade.py    # 3 of 3
+python ../scripts/checks/try_logout_all.py      # 4 of 4
+alembic check
+```

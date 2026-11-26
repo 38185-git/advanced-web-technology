@@ -24,8 +24,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Link href="/courses" className="px-3 py-2 hover:bg-index">Courses</Link>
               <Link href="/my-courses" className="px-3 py-2 hover:bg-index">My courses</Link>
               <Link href="/filter" className="px-3 py-2 hover:bg-index">Filter</Link>
-              <Link href="/account" className="px-3 py-2 hover:bg-index">Account</Link>
               <Link href="/about" className="px-3 py-2 hover:bg-index">About</Link>
+              <Link
+                href="/account"
+                className="rounded-md border border-stone-500 px-3 py-2 font-semibold hover:border-index hover:bg-index"
+              >
+                Account
+              </Link>
             </div>
           </nav>
         </header>

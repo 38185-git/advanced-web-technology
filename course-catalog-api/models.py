@@ -78,6 +78,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True)
     password_hash: Mapped[str]
     role: Mapped[str] = mapped_column(server_default=text("'student'"))
+    token_version: Mapped[int] = mapped_column(server_default=text("0"))
     student_id: Mapped[int | None] = mapped_column(
         BigInteger, ForeignKey("students.id", ondelete="SET NULL"), unique=True
     )

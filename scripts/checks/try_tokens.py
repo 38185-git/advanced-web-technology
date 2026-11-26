@@ -11,6 +11,7 @@ BASE = "http://localhost:8000"
 now = datetime.now(timezone.utc)
 claims = {
     "sub": "2",  # Aigerim
+    "ver": 0,
     "iss": "course-catalog-api",
     "iat": now,
     "exp": now + timedelta(minutes=15),
@@ -32,7 +33,7 @@ header, payload, signature = valid.split(".")
 
 # A payload the attacker writes by hand: sub = 1 is the administrator.
 expires = int((now + timedelta(minutes=15)).timestamp())
-as_admin = {"sub": "1", "iss": "course-catalog-api", "exp": expires}
+as_admin = {"sub": "1", "ver": 0, "iss": "course-catalog-api", "exp": expires}
 no_exp = {k: v for k, v in claims.items() if k != "exp"}
 none_header = b64({"alg": "none", "typ": "JWT"})
 

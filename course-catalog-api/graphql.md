@@ -122,5 +122,5 @@ mutation {
 ```bash
 cd course-catalog-api
 source .venv/bin/activate
-python try_graphql.py
+python ../scripts/checks/try_graphql.py
 ```

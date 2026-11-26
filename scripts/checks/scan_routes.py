@@ -4,7 +4,8 @@ import httpx
 
 BASE = "http://localhost:8000"
 # Login is open by design; GraphQL is checked by try_graphql_access.py.
-SKIP = {"/auth/login", "/graphql"}
+# Login is public, GraphQL has its own scanner, and logout-all mutates token state.
+SKIP = {"/auth/login", "/auth/logout-all", "/graphql"}
 
 
 def login(email: str, password: str) -> str:
