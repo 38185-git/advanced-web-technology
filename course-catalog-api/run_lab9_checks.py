@@ -12,7 +12,8 @@ SCRIPTS = [
     "check_users.py", "try_auth.py", "try_tokens.py", "try_access.py",
     "try_errors.py", "try_graphql_access.py", "try_graphql.py",
     "try_n_plus_1.py", "measure.py", "try_timing.py",
-    "scan_routes.py", "scan_graphql.py",
+    "scan_routes.py", "scan_graphql.py", "try_closed_router.py",
+    "try_hash_upgrade.py", "try_logout_all.py",
 ]
 
 if __name__ == "__main__":
