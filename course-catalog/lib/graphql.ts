@@ -15,10 +15,14 @@ export class GraphQLRequestError extends Error {
 export async function gql<T>(
   query: string,
   variables?: Record<string, unknown>,
+  token?: string,
 ): Promise<T> {
   const response = await fetch(`${API_URL}/graphql`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: JSON.stringify({ query, variables }),
     cache: "no-store",
   });
