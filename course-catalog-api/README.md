@@ -1,5 +1,7 @@
 # Course Catalog API
 
+Отчёт по Lab 9: [JWT, роли, матрица доступа, угрозы и эксперименты](LAB9_REPORT.md).
+
 Backend для каталога курсов. Используются FastAPI, PostgreSQL, SQLAlchemy, Alembic и GraphQL.
 
 ## Запуск

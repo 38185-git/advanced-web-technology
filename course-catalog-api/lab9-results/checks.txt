@@ -1,0 +1,133 @@
+
+--- check_users.py ---
+ok   4 users in the table
+ok   every hash is argon2id
+ok   roles and student links
+ok   passwords match their hashes
+4 of 4 as expected
+
+
+--- try_auth.py ---
+ok   login: right password     200  www-authenticate: -
+ok   login: wrong password     401  www-authenticate: Bearer
+ok   login: unknown e-mail     401  www-authenticate: Bearer
+ok   /me without a token       401  www-authenticate: Bearer
+ok   /me with a token          200  www-authenticate: -
+ok   /me with a garbage token  401  www-authenticate: Bearer
+6 of 6 as expected
+
+
+--- try_tokens.py ---
+ok   valid token                     200  aigerim@example.com
+ok   expired                         401  Invalid or expired token
+ok   signed with another key         401  Invalid or expired token
+ok   another issuer                  401  Invalid or expired token
+ok   no exp                          401  Invalid or expired token
+ok   sub is not a number             401  Invalid or expired token
+ok   sub of a missing user           401  Invalid or expired token
+ok   payload edited, old signature   401  Invalid or expired token
+ok   alg none, no signature          401  Invalid or expired token
+9 of 9 as expected
+
+
+--- try_access.py ---
+request                           anonymous      student        admin
+GET /courses                      200            200            200
+GET /me                           401            200            200
+GET /enrollments                  401            403            200
+POST /enrollments, for yourself   401            201            -
+POST /enrollments, for another    401            403            201
+14 of 14 as expected
+
+
+--- try_errors.py ---
+ok   email already taken  409  application/problem+json  email-taken
+ok   already enrolled     409  application/problem+json  already-enrolled
+ok   unknown course       404  application/problem+json  course-not-found
+ok   unknown student      404  application/problem+json  student-not-found
+ok   name too short       422  application/problem+json  validation-error
+5 of 5 as expected
+
+
+--- try_graphql_access.py ---
+ok   me, no token                 Authentication required
+ok   me, student                  aigerim@example.com student
+ok   students, student            Admin role required
+ok   students, admin              3
+ok   student(2).email, student    Daniyar Bekov, email None
+ok   student(1).email, student    aigerim@example.com
+ok   student(2).email, admin      daniyar@example.com
+ok   enrollments → student.email  2 shown, 2 hidden
+ok   bad token                    HTTP 401
+9 of 9 as expected
+
+
+--- try_graphql.py ---
+ok   courses(limit: 2)         ai-integration,modern-frontend
+ok   course(id: "api-design")  API Design: REST vs GraphQL
+ok   course(id: "nope")        None
+ok   student(id: 2) → courses  3
+ok   enroll twice              ALREADY_ENROLLED
+ok   enroll: unknown course    COURSE_NOT_FOUND
+ok   enroll: unknown student   STUDENT_NOT_FOUND
+ok   unknown field             Cannot query field 'titel' on type 'Course'
+8 of 8 as expected
+
+
+--- try_n_plus_1.py ---
+students → enrollments → course    rows: 3   SQL queries: 4
+enrollments → course, student      rows: 6   SQL queries: 4
+
+
+--- measure.py ---
+         requests  rounds  bytes  SQL queries
+REST     5         2       1145   5
+GraphQL  1         1       339    3
+
+
+--- try_timing.py ---
+wrong password, 40 requests per case
+unknown e-mail  median   83.4 ms
+known e-mail    median   83.2 ms
+
+
+--- scan_routes.py ---
+route                                     anonymous  student    admin
+GET /                                     200        200        200
+GET /me                                   401        200        200
+GET /courses                              200        200        200
+GET /courses/{course_id}                  404        404        404
+POST /courses/{course_id}/like            404        404        404
+POST /students                            422        422        422
+GET /enrollments                          401        403        200
+POST /enrollments                         401        422        422
+GET /students/{student_id}                404        404        404
+GET /students/{student_id}/enrollments    200        200        200
+GET /stats/courses                        200        200        200
+
+open without a token:
+  GET /
+  GET /courses
+  GET /courses/{course_id}
+  POST /courses/{course_id}/like
+  POST /students
+  GET /students/{student_id}
+  GET /students/{student_id}/enrollments
+  GET /stats/courses
+
+
+--- scan_graphql.py ---
+field                 anonymous
+Query.courses         open
+Query.course          open
+Query.me              Authentication required
+Query.students        Admin role required
+Query.student         open
+Query.enrollments     open
+Course.enrollments    open
+Student.enrollments   open
+Student.email         Not allowed to read this field
+Mutation.enroll       open
+Mutation.likeCourse   open
+
+Checks: 12/12 scripts passed

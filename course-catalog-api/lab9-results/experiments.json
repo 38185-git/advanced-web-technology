@@ -1,0 +1,164 @@
+{
+  "1": {
+    "key_errors": [
+      "missing",
+      "string_too_short"
+    ],
+    "hash_ms": 101.5,
+    "parameters": "m=65536,t=3,p=4",
+    "different_hashes": true,
+    "both_verify": true,
+    "wrong_password": false
+  },
+  "2": {
+    "protected": {
+      "nobody@example.com": 79.43,
+      "aigerim@example.com": 77.69
+    },
+    "early_return": {
+      "nobody@example.com": 0.82,
+      "aigerim@example.com": 75.8
+    }
+  },
+  "3": {
+    "protected": {
+      "valid": 200,
+      "expired": 401,
+      "wrong key": 401,
+      "wrong issuer": 401,
+      "no exp": 401,
+      "bad sub": 401,
+      "missing user": 401,
+      "edited payload": 401,
+      "alg none": 401
+    },
+    "signature_disabled": {
+      "valid": {
+        "status": 200,
+        "email": "aigerim@example.com"
+      },
+      "expired": {
+        "status": 200,
+        "email": "aigerim@example.com"
+      },
+      "wrong key": {
+        "status": 200,
+        "email": "aigerim@example.com"
+      },
+      "wrong issuer": {
+        "status": 200,
+        "email": "aigerim@example.com"
+      },
+      "no exp": {
+        "status": 200,
+        "email": "aigerim@example.com"
+      },
+      "bad sub": {
+        "status": 401,
+        "email": null
+      },
+      "missing user": {
+        "status": 401,
+        "email": null
+      },
+      "edited payload": {
+        "status": 200,
+        "email": "admin@example.com"
+      },
+      "alg none": {
+        "status": 200,
+        "email": "admin@example.com"
+      }
+    }
+  },
+  "4": {
+    "1": [
+      200,
+      403,
+      200
+    ],
+    "2": [
+      403,
+      200,
+      403
+    ]
+  },
+  "5": {
+    "protected": 403,
+    "owner_check_removed": 201,
+    "restored": 403
+  },
+  "6": {
+    "protected": {
+      "data": {
+        "student": {
+          "name": "Daniyar Bekov",
+          "email": null
+        }
+      },
+      "errors": [
+        {
+          "message": "Not allowed to read this field",
+          "locations": [
+            {
+              "line": 1,
+              "column": 27
+            }
+          ],
+          "path": [
+            "student",
+            "email"
+          ]
+        }
+      ]
+    },
+    "root_only": {
+      "data": {
+        "student": {
+          "name": "Daniyar Bekov",
+          "email": "daniyar@example.com"
+        }
+      }
+    },
+    "nonnull": {
+      "data": {
+        "student": null
+      },
+      "errors": [
+        {
+          "message": "Not allowed to read this field",
+          "locations": [
+            {
+              "line": 1,
+              "column": 27
+            }
+          ],
+          "path": [
+            "student",
+            "email"
+          ]
+        }
+      ]
+    },
+    "nonnull_nested": {
+      "data": null,
+      "errors": [
+        {
+          "message": "Not allowed to read this field",
+          "locations": [
+            {
+              "line": 1,
+              "column": 42
+            }
+          ],
+          "path": [
+            "enrollments",
+            2,
+            "student",
+            "email"
+          ]
+        }
+      ]
+    }
+  }
+}
